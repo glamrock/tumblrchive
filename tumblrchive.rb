@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env ruby1.8
 
 require 'rubygems'
 require 'optparse'
@@ -46,13 +46,13 @@ class Tumblrchiver
 						body = post.get_elements("regular-body")[0].text
 						
 
-						emh = @options[:email_header] || ""
-						emf = @options[:email_footer] || ""
+						emh = (@options[:email_header] || "") + "\n\n\n"
+						emf = "\n\n\n" + (@options[:email_footer] || "")
 
 						Pony.mail(:to => @options[:email_to],
 											:from => @options[:email_from],
 											:subject => "New '#{@domain}' post: '#{title}'",
-											:html_body => "#{emh}\n\n#{body}\n\n#{emf}",
+											:html_body => "#{emh}#{body}#{emf}",
 											:via => :smtp)
 					end
 
@@ -108,14 +108,11 @@ if __FILE__ == $0
 
 		opts.parse!(ARGV)
 
-		p ARGV
 		if ARGV.length < 1
 			puts opts
 			exit
 		end
 	end
-
-	p options
 
 	archiver = Tumblrchiver.new(ARGV[0], options)
 	archiver.start
